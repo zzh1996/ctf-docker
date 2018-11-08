@@ -48,6 +48,6 @@ DOCKERFILE_EOF
 
 docker run -it --rm --privileged --cap-add=SYS_PTRACE \
     --security-opt seccomp=unconfined \
-    -v `pwd`:/root/ctf_docker \
+    -v ${1:-`pwd`}:/root/ctf_docker \
     -w /root/ctf_docker \
     ctf_ubuntu_1804
