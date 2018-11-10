@@ -28,7 +28,8 @@ run apt install -y git sudo bash make nano vim zsh tmux \
 
 run pip3 install -U pip
 run pip2 install -U pip
-run pip3 install -U ipython pycrypto gmpy2 gmpy angr
+run pip3 install -U ipython pycrypto gmpy2 gmpy angr formatstring
+run pip3 install -U git+https://github.com/arthaud/python3-pwntools.git
 run pip2 install -U ipython pycrypto gmpy2 gmpy angr pwntools ropgadget
 
 run git clone https://github.com/scwuaptx/peda.git ~/peda
