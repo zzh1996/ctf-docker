@@ -2,7 +2,7 @@
 docker build -t ctf_ubuntu_1804 - <<DOCKERFILE_EOF || exit 1
 from ubuntu:18.04
 run rm /etc/dpkg/dpkg.cfg.d/excludes
-run sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
+run sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
 #run mkdir -p ~/.config/pip
 #run printf "[global]\nindex-url = https://mirrors.ustc.edu.cn/pypi/web/simple\nformat = columns\n" > ~/.config/pip/pip.conf
 
@@ -24,7 +24,8 @@ run apt install -y git sudo bash make nano vim zsh tmux \
     htop iotop iftop man strace ltrace wget \
     manpages-posix manpages-posix-dev \
     libgmp3-dev libmpfr-dev libmpc-dev \
-    nmap libssl-dev
+    nmap libssl-dev \
+    inetutils-ping dnsutils whois mtr
 
 run pip3 install -U pip
 run pip2 install -U pip
