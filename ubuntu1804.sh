@@ -33,26 +33,31 @@ run pip3 install -U ipython pycrypto gmpy2 gmpy angr formatstring
 run pip3 install -U git+https://github.com/arthaud/python3-pwntools.git
 run pip2 install -U ipython pycrypto gmpy2 gmpy angr pwntools ropgadget
 
-run git clone https://github.com/scwuaptx/peda.git ~/peda
-run cp ~/peda/.inputrc ~/
-run git clone https://github.com/scwuaptx/Pwngdb.git ~/Pwngdb
-run cp ~/Pwngdb/.gdbinit ~/
+run useradd -ms /usr/bin/zsh ctf
+run adduser ctf sudo
+run echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+user ctf
+workdir /home/ctf
+
+run git clone https://github.com/scwuaptx/peda.git ~/.peda
+run cp ~/.peda/.inputrc ~/
+run git clone https://github.com/scwuaptx/Pwngdb.git ~/.Pwngdb
+run cp ~/.Pwngdb/.gdbinit ~/
 
 run sh -c "\$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" || true
-run curl https://raw.githubusercontent.com/zzh1996/zshrc/master/zshrc.sh > ~/zshrc.sh
-run sed -i '/source \\\$ZSH\/oh-my-zsh.sh/isource ~/zshrc.sh' ~/.zshrc
+run curl https://raw.githubusercontent.com/zzh1996/zshrc/master/zshrc.sh > ~/.zshrc.sh
+run sed -i '/source \\\$ZSH\/oh-my-zsh.sh/isource ~/.zshrc.sh' ~/.zshrc
 run git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 run git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/custom/plugins/zsh-completions
 run git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
-run chsh -s /usr/bin/zsh
 
 run curl https://raw.githubusercontent.com/wklken/vim-for-server/master/vimrc > ~/.vimrc
 
-cmd zsh -i
+entrypoint zsh -i
 DOCKERFILE_EOF
 
 docker run -it --rm --privileged --cap-add=SYS_PTRACE \
     --security-opt seccomp=unconfined \
     -v ${1:-`pwd`}:/root/ctf_docker \
-    -w /root/ctf_docker \
+    --hostname ctf_docker \
     ctf_ubuntu_1804
