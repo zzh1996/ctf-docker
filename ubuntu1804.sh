@@ -41,6 +41,9 @@ run cp ~/Pwngdb/.gdbinit ~/
 run sh -c "\$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" || true
 run curl https://raw.githubusercontent.com/zzh1996/zshrc/master/zshrc.sh > ~/zshrc.sh
 run sed -i '/source \\\$ZSH\/oh-my-zsh.sh/isource ~/zshrc.sh' ~/.zshrc
+run git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+run git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/custom/plugins/zsh-completions
+run git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 run chsh -s /usr/bin/zsh
 
 run curl https://raw.githubusercontent.com/wklken/vim-for-server/master/vimrc > ~/.vimrc
