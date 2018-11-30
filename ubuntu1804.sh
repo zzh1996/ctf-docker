@@ -50,12 +50,15 @@ run sh -c "\$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/to
     git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting && \
     curl https://raw.githubusercontent.com/wklken/vim-for-server/master/vimrc > ~/.vimrc
 
+run mkdir ctf_docker
+workdir /home/ctf/ctf_docker
+
 entrypoint zsh -i
 DOCKERFILE_EOF
 
 docker run -it --rm --privileged --cap-add=SYS_PTRACE \
     --security-opt seccomp=unconfined \
-    -v ${1:-`pwd`}:/root/ctf_docker \
+    -v ${1:-`pwd`}:/home/ctf/ctf_docker \
     --hostname ctf_docker \
     --name ctf_ubuntu_1804 \
     zzh1996/ctf_ubuntu_1804
