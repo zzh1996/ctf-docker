@@ -76,7 +76,7 @@ DOCKERFILE_EOF
 
 docker run -it --rm --privileged --cap-add=SYS_PTRACE \
     --security-opt seccomp=unconfined \
-    -v `realpath ${1:-$(pwd)}`:/home/ctf/mount \
+    -v "`realpath ${1:-$(pwd)}`":/home/ctf/mount \
     --hostname ctf_docker \
     --name ctf_ubuntu_1804 \
     -e TZ=Asia/Shanghai \
