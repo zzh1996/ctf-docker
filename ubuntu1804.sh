@@ -1,8 +1,8 @@
 #!/bin/sh
-docker build -t zzh1996/ctf_ubuntu_1804 - <<DOCKERFILE_EOF || exit 1
+docker build -t hustcw/ctf_ubuntu_1804 - <<DOCKERFILE_EOF || exit 1
 from ubuntu:18.04
 run rm /etc/dpkg/dpkg.cfg.d/excludes
-run sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list \
+run sed -i 's/archive.ubuntu.com/linux.yz.yamagata-u.ac.jp/g' /etc/apt/sources.list \
     && sed -i 's/# deb-src/deb-src/g' /etc/apt/sources.list
 
 run dpkg --add-architecture i386 && apt update && apt full-upgrade -y && apt clean
@@ -54,9 +54,15 @@ run wget https://bitbucket.org/pypy/pypy/downloads/pypy3.5-v7.0.0-linux64.tar.bz
     pypy3 -m ensurepip && \
     pypy3 -m pip install angr
 
+run git clone https://github.com/pwndbg/pwndbg
+workdir /home/ctf/pwndbg
+run ./setup.sh
+workdir /home/ctf
+
 run git clone https://github.com/Ganapati/RsaCtfTool.git ~/RsaCtfTool && \
     git clone https://github.com/scwuaptx/peda.git ~/peda && cp ~/peda/.inputrc ~/ && \
-    git clone https://github.com/scwuaptx/Pwngdb.git ~/Pwngdb && cp ~/Pwngdb/.gdbinit ~/ && \
+    git clone https://github.com/scwuaptx/Pwngdb.git ~/Pwngdb && cat ~/Pwngdb/.gdbinit >> ~/.gdbinit && \
+    sed -i 's?source ~/peda/peda.py?#source ~/peda/peda.py?g' .gdbinit && \
     sudo gem install one_gadget
 
 run sh -c "\$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" || true && \
@@ -65,8 +71,8 @@ run sh -c "\$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/to
     git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions && \
     git clone https://github.com/zsh-users/zsh-completions ~/.oh-my-zsh/custom/plugins/zsh-completions && \
     git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting && \
-    curl https://raw.githubusercontent.com/wklken/vim-for-server/master/vimrc > ~/.vimrc \
-    
+    curl https://raw.githubusercontent.com/wklken/vim-for-server/master/vimrc > ~/.vimrc 
+
 run mkdir mount
 workdir /home/ctf/mount
 
@@ -79,4 +85,4 @@ docker run -it --rm --privileged --cap-add=SYS_PTRACE \
     --hostname ctf_docker \
     --name ctf_ubuntu_1804 \
     -e TZ=Asia/Shanghai \
-    zzh1996/ctf_ubuntu_1804
+    hustcw/ctf_ubuntu_1804
