@@ -2,7 +2,8 @@
 docker build -t zzh1996/ctf_ubuntu_1804 - <<DOCKERFILE_EOF || exit 1
 from ubuntu:18.04
 run rm /etc/dpkg/dpkg.cfg.d/excludes
-run sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
+run sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list \
+    && sed -i 's/# deb-src/deb-src/g' /etc/apt/sources.list
 
 run dpkg --add-architecture i386 && apt update && apt full-upgrade -y && apt clean
 
@@ -19,7 +20,9 @@ run DEBIAN_FRONTEND=noninteractive \
     build-essential libc6-dev-i386 libc6-dbg libc6-dbg:i386 libstdc++6:i386 \
     python python-pip python3 python3-pip curl netcat htop iotop iftop man strace ltrace wget \
     manpages-posix manpages-posix-dev libgmp3-dev libmpfr-dev libmpc-dev \
-    nmap zmap libssl-dev inetutils-ping dnsutils whois mtr net-tools iproute2 tzdata \
+    nmap zmap libssl-dev inetutils-ping dnsutils whois mtr net-tools iproute2 tzdata ruby \
+    ssh \
+    && apt-get source libc6-dev \
     && apt clean
 
 run useradd -ms /usr/bin/zsh ctf && \
@@ -27,34 +30,37 @@ run useradd -ms /usr/bin/zsh ctf && \
     echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 user ctf
 workdir /home/ctf
-run sudo chown -R ctf:ctf /usr/local
 env PATH="/home/ctf/.local/bin:\${PATH}"
 
-run pip3 install -U pip && \
-    pip2 install -U pip
-run pip3 install -U ipython pycrypto pycryptodomex gmpy2 gmpy sympy numpy virtualenv requests flask angr formatstring mtp  && \
-    pip3 install -U git+https://github.com/arthaud/python3-pwntools.git && \
-    pip2 install -U ipython pycrypto pycryptodomex gmpy2 gmpy sympy numpy virtualenv requests flask angr pwntools ropgadget 
+run pip3 install --user --no-cache-dir -U pip && \
+    pip2 install --user --no-cache-dir -U pip
+run pip3 install --user --no-cache-dir -U jupyterlab ipython pycrypto pycryptodomex gmpy2 gmpy sympy numpy virtualenv requests flask angr formatstring mtp capstone  && \
+    pip3 install --user --no-cache-dir -U git+https://github.com/arthaud/python3-pwntools.git && \
+    pip2 install --user --no-cache-dir -U jupyterlab ipython pycrypto pycryptodomex gmpy2 gmpy sympy numpy virtualenv requests flask angr pwntools ropgadget capstone
 
-run wget https://bitbucket.org/pypy/pypy/downloads/pypy2.7-v7.0.0-linux64.tar.bz2 -P /tmp/ && \
-    tar xf /tmp/pypy2.7-v7.0.0-linux64.tar.bz2 && \
-    rm /tmp/pypy2.7-v7.0.0-linux64.tar.bz2 && \
-    mv pypy2.7-v7.0.0-linux64 pypy2 && \
-    ln -s ~/pypy2/bin/pypy /usr/local/bin/pypy && \
+run wget https://bitbucket.org/pypy/pypy/downloads/pypy2.7-v7.1.1-linux64.tar.bz2 -P /tmp/ && \
+    tar xf /tmp/pypy2.7-v7.1.1-linux64.tar.bz2 && \
+    rm /tmp/pypy2.7-v7.1.1-linux64.tar.bz2 && \
+    mv pypy2.7-v7.1.1-linux64 pypy2 && \
+    ln -s ~/pypy2/bin/pypy ~/.local/bin/pypy && \
     pypy -m ensurepip && \
     pypy -m pip install angr
 
-run wget https://bitbucket.org/pypy/pypy/downloads/pypy3.5-v7.0.0-linux64.tar.bz2 -P /tmp/ && \
-    tar xf /tmp/pypy3.5-v7.0.0-linux64.tar.bz2 && \
-    rm /tmp/pypy3.5-v7.0.0-linux64.tar.bz2 && \
-    mv pypy3.5-v7.0.0-linux64 pypy3 && \
-    ln -s ~/pypy3/bin/pypy3 /usr/local/bin/pypy3 && \
+run wget https://bitbucket.org/pypy/pypy/downloads/pypy3.6-v7.1.1-linux64.tar.bz2 -P /tmp/ && \
+    tar xf /tmp/pypy3.6-v7.1.1-linux64.tar.bz2 && \
+    rm /tmp/pypy3.6-v7.1.1-linux64.tar.bz2 && \
+    mv pypy3.6-v7.1.1-linux64 pypy3 && \
+    ln -s ~/pypy3/bin/pypy3 ~/.local/bin/pypy3 && \
     pypy3 -m ensurepip && \
     pypy3 -m pip install angr
 
-run git clone https://github.com/Ganapati/RsaCtfTool.git ~/RsaCtfTool && \
+run git clone https://github.com/pwndbg/pwndbg && cd pwndbg && ./setup.sh && cd .. && \
+    git clone https://github.com/Ganapati/RsaCtfTool.git ~/RsaCtfTool && \
     git clone https://github.com/scwuaptx/peda.git ~/peda && cp ~/peda/.inputrc ~/ && \
-    git clone https://github.com/scwuaptx/Pwngdb.git ~/Pwngdb && cp ~/Pwngdb/.gdbinit ~/
+    git clone https://github.com/scwuaptx/Pwngdb.git ~/Pwngdb && cat ~/Pwngdb/.gdbinit >> ~/.gdbinit && \
+    sed -i 's?source ~/peda/peda.py?#source ~/peda/peda.py?g' .gdbinit && \
+    sudo rm -rf ~/.cache/pip && \
+    sudo gem install one_gadget
 
 run sh -c "\$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)" || true && \
     curl https://raw.githubusercontent.com/zzh1996/zshrc/master/zshrc.sh > ~/.zshrc.sh && \
@@ -72,7 +78,7 @@ DOCKERFILE_EOF
 
 docker run -it --rm --privileged --cap-add=SYS_PTRACE \
     --security-opt seccomp=unconfined \
-    -v "`realpath ${1:-$(pwd)}`":/home/ctf/mount \
+    -v "`realpath "${1:-$(pwd)}"`":/home/ctf/mount \
     --hostname ctf_docker \
     --name ctf_ubuntu_1804 \
     -e TZ=Asia/Shanghai \
