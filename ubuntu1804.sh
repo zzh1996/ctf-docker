@@ -32,9 +32,9 @@ env PATH="/home/ctf/.local/bin:\${PATH}"
 
 run pip3 install -U pip && \
     pip2 install -U pip
-run pip3 install -U ipython pycrypto pycryptodomex gmpy2 gmpy sympy numpy virtualenv requests flask angr formatstring mtp  && \
+run pip3 install -U jupyterlab ipython pycrypto pycryptodomex gmpy2 gmpy sympy numpy virtualenv requests flask angr formatstring mtp  && \
     pip3 install -U git+https://github.com/arthaud/python3-pwntools.git && \
-    pip2 install -U ipython pycrypto pycryptodomex gmpy2 gmpy sympy numpy virtualenv requests flask angr pwntools ropgadget 
+    pip2 install -U jupyterlab ipython pycrypto pycryptodomex gmpy2 gmpy sympy numpy virtualenv requests flask angr pwntools ropgadget
 
 run wget https://bitbucket.org/pypy/pypy/downloads/pypy2.7-v7.0.0-linux64.tar.bz2 -P /tmp/ && \
     tar xf /tmp/pypy2.7-v7.0.0-linux64.tar.bz2 && \
@@ -72,7 +72,7 @@ DOCKERFILE_EOF
 
 docker run -it --rm --privileged --cap-add=SYS_PTRACE \
     --security-opt seccomp=unconfined \
-    -v "`realpath ${1:-$(pwd)}`":/home/ctf/mount \
+    -v "`realpath "${1:-$(pwd)}"`":/home/ctf/mount \
     --hostname ctf_docker \
     --name ctf_ubuntu_1804 \
     -e TZ=Asia/Shanghai \
